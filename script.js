@@ -43,14 +43,51 @@ document.getElementById('receivedSubmissionsFileInput').addEventListener('change
     }
 });
 
+function mergeAndRecalculate(allData, newSubmission) {
+    const existingIndex = allData.findIndex(item =>
+        item.GameType === newSubmission.GameType &&
+        item.Prompt === newSubmission.Prompt &&
+        item.LLM1stPlayer === newSubmission.LLM1stPlayer &&
+        item.LLM2ndPlayer === newSubmission.LLM2ndPlayer
+    );
+
+    if (existingIndex !== -1) {
+        const existingData = allData[existingIndex];
+
+        // Recalculate necessary fields
+        existingData.Wins1st += newSubmission.Wins1st;
+        existingData.Wins2nd += newSubmission.Wins2nd;
+        existingData.Draws += newSubmission.Draws;
+
+        const totalGames = existingData.Wins1st + existingData.Wins2nd + existingData.Draws + newSubmission.Draws;
+        existingData.WinRatio1st = existingData.Wins1st / totalGames;
+        existingData.WinRatio2nd = existingData.Wins2nd / totalGames;
+
+        existingData.InvalidMovesRatio1st = ((existingData.InvalidMovesRatio1st * (totalGames - newSubmission.Draws)) + (newSubmission.InvalidMovesRatio1st * newSubmission.Draws)) / totalGames;
+        existingData.InvalidMovesRatio2nd = ((existingData.InvalidMovesRatio2nd * (totalGames - newSubmission.Draws)) + (newSubmission.InvalidMovesRatio2nd * newSubmission.Draws)) / totalGames;
+
+        existingData.TotalMoves1st += newSubmission.TotalMoves1st;
+        existingData.TotalMoves2nd += newSubmission.TotalMoves2nd;
+
+        existingData.ProviderEmail += `, ${newSubmission.ProviderEmail}`;
+
+        allData[existingIndex] = existingData;
+    } else {
+        // Add new submission as a new object
+        allData.push(newSubmission);
+    }
+}
+
 document.getElementById('mergeAndDownloadBtn').addEventListener('click', function() {
     if (allDataJSON.length === 0 || receivedSubmissionsJSON.length === 0) {
         alert("Please upload both JSON files before merging.");
         return;
     }
 
-    const mergedJSON = [...allDataJSON, ...receivedSubmissionsJSON];
-    const mergedJSONBlob = new Blob([JSON.stringify(mergedJSON, null, 2)], { type: 'application/json' });
+    // Assuming receivedSubmissionsJSON contains only one object
+    receivedSubmissionsJSON.forEach(submission => mergeAndRecalculate(allDataJSON, submission));
+
+    const mergedJSONBlob = new Blob([JSON.stringify(allDataJSON, null, 2)], { type: 'application/json' });
     const url = URL.createObjectURL(mergedJSONBlob);
 
     const a = document.createElement('a');
