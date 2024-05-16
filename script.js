@@ -54,20 +54,29 @@ function mergeAndRecalculate(allData, newSubmission) {
     if (existingIndex !== -1) {
         const existingData = allData[existingIndex];
 
-        // Recalculate necessary fields
+        // Update Wins and Draws
         existingData.Wins1st += newSubmission.Wins1st;
         existingData.Wins2nd += newSubmission.Wins2nd;
         existingData.Draws += newSubmission.Draws;
 
+        // Calculate total games
         const totalGames = existingData.Wins1st + existingData.Wins2nd + existingData.Draws;
+
+        // Recalculate Win Ratios
         existingData.WinRatio1st = existingData.Wins1st / totalGames;
         existingData.WinRatio2nd = existingData.Wins2nd / totalGames;
 
-        existingData.InvalidMovesRatio1st = ((existingData.InvalidMovesRatio1st * (totalGames - newSubmission.Draws)) + (newSubmission.InvalidMovesRatio1st * newSubmission.Draws)) / totalGames;
-        existingData.InvalidMovesRatio2nd = ((existingData.InvalidMovesRatio2nd * (totalGames - newSubmission.Draws)) + (newSubmission.InvalidMovesRatio2nd * newSubmission.Draws)) / totalGames;
+        // Recalculate Invalid Moves Ratios
+        const totalInvalidMoves1st = (existingData.InvalidMovesRatio1st * existingData.TotalMoves1st) + (newSubmission.InvalidMovesRatio1st * newSubmission.TotalMoves1st);
+        const totalInvalidMoves2nd = (existingData.InvalidMovesRatio2nd * existingData.TotalMoves2nd) + (newSubmission.InvalidMovesRatio2nd * newSubmission.TotalMoves2nd);
+        const totalMoves1st = existingData.TotalMoves1st + newSubmission.TotalMoves1st;
+        const totalMoves2nd = existingData.TotalMoves2nd + newSubmission.TotalMoves2nd;
+        existingData.InvalidMovesRatio1st = totalInvalidMoves1st / totalMoves1st;
+        existingData.InvalidMovesRatio2nd = totalInvalidMoves2nd / totalMoves2nd;
 
-        existingData.TotalMoves1st += newSubmission.TotalMoves1st;
-        existingData.TotalMoves2nd += newSubmission.TotalMoves2nd;
+        // Update Total Moves
+        existingData.TotalMoves1st = totalMoves1st;
+        existingData.TotalMoves2nd = totalMoves2nd;
 
         // Update ProviderEmail by adding new emails if they don't already exist
         const existingEmails = existingData.ProviderEmail.split(',').map(email => email.trim());
@@ -92,7 +101,6 @@ document.getElementById('mergeAndDownloadBtn').addEventListener('click', functio
         return;
     }
 
-    // Assuming receivedSubmissionsJSON contains only one object
     receivedSubmissionsJSON.forEach(submission => mergeAndRecalculate(allDataJSON, submission));
 
     const mergedJSONBlob = new Blob([JSON.stringify(allDataJSON, null, 2)], { type: 'application/json' });
