@@ -59,7 +59,7 @@ function mergeAndRecalculate(allData, newSubmission) {
         existingData.Wins2nd += newSubmission.Wins2nd;
         existingData.Draws += newSubmission.Draws;
 
-        const totalGames = existingData.Wins1st + existingData.Wins2nd + existingData.Draws + newSubmission.Draws;
+        const totalGames = existingData.Wins1st + existingData.Wins2nd + existingData.Draws;
         existingData.WinRatio1st = existingData.Wins1st / totalGames;
         existingData.WinRatio2nd = existingData.Wins2nd / totalGames;
 
@@ -69,7 +69,15 @@ function mergeAndRecalculate(allData, newSubmission) {
         existingData.TotalMoves1st += newSubmission.TotalMoves1st;
         existingData.TotalMoves2nd += newSubmission.TotalMoves2nd;
 
-        existingData.ProviderEmail += `, ${newSubmission.ProviderEmail}`;
+        // Update ProviderEmail by adding new emails if they don't already exist
+        const existingEmails = existingData.ProviderEmail.split(',').map(email => email.trim());
+        const newEmails = newSubmission.ProviderEmail.split(',').map(email => email.trim());
+        newEmails.forEach(email => {
+            if (!existingEmails.includes(email)) {
+                existingEmails.push(email);
+            }
+        });
+        existingData.ProviderEmail = existingEmails.join(', ');
 
         allData[existingIndex] = existingData;
     } else {
