@@ -101,6 +101,7 @@ document.getElementById('mergeAndDownloadBtn').addEventListener('click', functio
         return;
     }
 
+    // Process each new submission (assuming receivedSubmissionsJSON contains only one object)
     receivedSubmissionsJSON.forEach(submission => mergeAndRecalculate(allDataJSON, submission));
 
     const mergedJSONBlob = new Blob([JSON.stringify(allDataJSON, null, 2)], { type: 'application/json' });
