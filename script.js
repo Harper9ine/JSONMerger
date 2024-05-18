@@ -63,7 +63,7 @@ function mergeAndRecalculate(allData, newSubmission) {
         const totalGames = existingData["Wins-1st"] + existingData["Wins-2nd"] + existingData.Draws;
 
         // Recalculate Win Ratios
-        existingData["WinRatio-1st"] = (existingData["Wins-1st"] / totalGames).toFixed(2);
+        existingData["WinRatio-1st"] = parseFloat((existingData["Wins-1st"] / totalGames).toFixed(2));
         existingData["WinRatio-2nd"] = (existingData["Wins-2nd"] / totalGames).toFixed(2);
 
         // Recalculate Invalid Moves Ratios
@@ -71,8 +71,8 @@ function mergeAndRecalculate(allData, newSubmission) {
         const totalInvalidMoves2nd = (existingData["InvalidMovesRatio-2nd"] * existingData["TotalMoves-2nd"]) + (newSubmission["InvalidMovesRatio-2nd"] * newSubmission["TotalMoves-2nd"]);
         const totalMoves1st = existingData["TotalMoves-1st"] + newSubmission["TotalMoves-1st"];
         const totalMoves2nd = existingData["TotalMoves-2nd"] + newSubmission["TotalMoves-2nd"];
-        existingData["InvalidMovesRatio-1st"] = (totalInvalidMoves1st / totalMoves1st).toFixed(2);
-        existingData["InvalidMovesRatio-2nd"] = (totalInvalidMoves2nd / totalMoves2nd).toFixed(2);
+        existingData["InvalidMovesRatio-1st"] = parseFloat((totalInvalidMoves1st / totalMoves1st).toFixed(2));
+        existingData["InvalidMovesRatio-2nd"] = parseFloat((totalInvalidMoves2nd / totalMoves2nd).toFixed(2));
 
         // Update Total Moves
         existingData["TotalMoves-1st"] = totalMoves1st;
