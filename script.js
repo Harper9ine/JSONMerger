@@ -113,4 +113,10 @@ document.getElementById('mergeAndDownloadBtn').addEventListener('click', functio
     a.click();
     URL.revokeObjectURL(url);
     alert("Files merged and downloaded successfully.");
+
+    //after files are merged reset the state
+    allDataJSON = [];
+    receivedSubmissionsJSON = []
+    document.getElementById('allDataTextArea').value = '';
+    document.getElementById('receivedSubmissionsTextArea').value = ''; 
 });
