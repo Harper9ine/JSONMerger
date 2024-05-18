@@ -119,4 +119,6 @@ document.getElementById('mergeAndDownloadBtn').addEventListener('click', functio
     receivedSubmissionsJSON = []
     document.getElementById('allDataTextArea').value = '';
     document.getElementById('receivedSubmissionsTextArea').value = ''; 
+    document.getElementById('allDataFileInput').value = '';
+    document.getElementById('receivedSubmissionsFileInput').value = '';
 });
